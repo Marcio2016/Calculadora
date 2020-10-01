@@ -3,24 +3,52 @@ import './calculator.css';
 import Button from '../components/Button';
 import Display from '../components/Display';
 
+  const initialState = {
+    displayValue: '0',
+    clearDisplay: false,
+    operation: null,
+    values: [0, 0],
+    current: 0
+  }
+
 export default class Calculator extends Component {
 
+  state = {...initialState }
+
   clearMemory(){
-    console.log('Limpar')
+    this.setState({...initialState})
   }
   setOperation(operation){
-    console.log('Operação')
+    console.log('operation')
   }
 
   addDigite(n){
-    console.log(n)
+    if(n === '.' && this.state.displayValue.includes('.')){
+      return
+    }
+
+    const clearDisplay = this.state.displayValue === '0'
+     || this.state.clearDisplay
+
+    const currentValue = clearDisplay ? '' : this.state.displayValue
+    const displayValue = currentValue + n
+
+    this.setState({displayValue, currentValue: false})
+
+    if(n !== '.') {
+      const i = this.state.current
+      const newValue = parseFloat(displayValue)
+      const values = [...this.state.values]
+      values[i] = newValue
+      this.setState({values})
+    }
   }
   render() {
    const addDigite = n => this.addDigite(n);
    const setOperation = op => this.setOperation(op)
     return (
       <div className='calculator'>
-        <Display value='100' />
+        <Display value={this.state.displayValue} />
         <Button label='AC' triple='triple' click={() => this.clearMemory()} />
         <Button label='/' operation='operation' click={setOperation} />
         <Button label='7' click={addDigite}/>
